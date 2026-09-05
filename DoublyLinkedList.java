@@ -1,33 +1,35 @@
+
 public class DoublyLinkedList<E> {
 
     private static class Node<E> {
+
         private E element;
         private Node<E> prev;
         private Node<E> next;
-    
-        public Node(E e, Node<E> p, Node<E> n){
+
+        public Node(E e, Node<E> p, Node<E> n) {
             element = e;
             prev = p;
             next = n;
         }
-    
-        public E getElement(){
+
+        public E getElement() {
             return element;
         }
-    
-        public Node<E> getNext(){
+
+        public Node<E> getNext() {
             return next;
         }
 
-        public Node<E> getPrev(){
+        public Node<E> getPrev() {
             return prev;
         }
-    
-        public void setNext(Node<E> n){
+
+        public void setNext(Node<E> n) {
             next = n;
         }
 
-        public void setPrev(Node<E> p){
+        public void setPrev(Node<E> p) {
             prev = p;
         }
     }
@@ -36,74 +38,75 @@ public class DoublyLinkedList<E> {
     private Node<E> trailer;
     private int size = 0;
 
-    public DoublyLinkedList(){
+    public DoublyLinkedList() {
         header = new Node<>(null, null, null);
         trailer = new Node<>(null, header, null);
         header.setNext(trailer);
     }
 
-    public int size(){
+    public int size() {
         return size;
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return size == 0;
     }
-    
-    public E first(){
-        if (isEmpty()){
+
+    public E first() {
+        if (isEmpty()) {
             return null;
-        } 
+        }
         return header.getNext().getElement();
     }
 
-    public E last(){
-        if (isEmpty()){
+    public E last() {
+        if (isEmpty()) {
             return null;
         }
         return trailer.getPrev().getElement();
     }
 
-    public void addFirst(E e){
+    public void addFirst(E e) {
         addBetween(e, header, header.getNext());
     }
 
-    public void addLast(E e){
+    public void addLast(E e) {
         addBetween(e, trailer.getPrev(), trailer);
     }
 
-    public E removeFirst(){
-        if (isEmpty()){
+    public E removeFirst() {
+        if (isEmpty()) {
             return null;
         }
         return remove(header.getNext());
     }
 
-    public E removeLast(){
-        if (isEmpty()){
+    public E removeLast() {
+        if (isEmpty()) {
             return null;
         }
         return remove(trailer.getPrev());
     }
 
-    private void addBetween(E e, Node<E> predecessor, Node<E> successor){
+    private void addBetween(E e, Node<E> predecessor, Node<E> successor) {
         Node<E> newest = new Node<>(e, predecessor, successor);
         predecessor.setNext(newest);
         successor.setPrev(newest);
         size++;
     }
 
-    private E remove(Node<E> node){
+    private E remove(Node<E> node) {
         Node<E> predecessor = node.getPrev();
         Node<E> successor = node.getNext();
 
         predecessor.setNext(successor);
         successor.setPrev(predecessor);
         size--;
-        return node.getElement();        
+        return node.getElement();
     }
 
-    public String toString(){
+    @Override
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         Node<E> current = header.getNext();
         while (current != trailer) {
@@ -114,7 +117,27 @@ public class DoublyLinkedList<E> {
         return sb.toString();
     }
 
-    public void group(){
+    public void group() {
+        Node<E> insertAfter = header;
+        Node<E> current = header.getNext();
 
+        while (current != trailer) {
+            Node<E> next = current.getNext();
+
+            if (current.getElement() == null) {
+                if (current.getPrev() != insertAfter) {
+                    current.getPrev().setNext(next);
+                    next.setPrev(current.getPrev());
+
+                    Node<E> successor = insertAfter.getNext();
+                    insertAfter.setNext(current);
+                    current.setPrev(insertAfter);
+                    current.setNext(successor);
+                    successor.setPrev(current);
+                }
+                insertAfter = current;
+            }
+            current = next;
+        }
     }
 }
